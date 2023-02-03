@@ -8,9 +8,6 @@ using Telegram.Bot.Polling;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddDbContextPool<BotDbContext>(option =>
-//    option.UseSqlServer(builder.Configuration.GetConnectionString("BotDb")));
-
 builder.Services.AddDbContext<BotDbContext>(options =>
          options.UseSqlServer(builder.Configuration.GetConnectionString("BotDb")),
          ServiceLifetime.Transient);

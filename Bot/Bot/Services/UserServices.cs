@@ -1,5 +1,4 @@
 ﻿using Bot.Data;
-using Bot.Entities;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;

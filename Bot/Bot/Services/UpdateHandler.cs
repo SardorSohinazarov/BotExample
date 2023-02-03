@@ -37,26 +37,38 @@ namespace Bot.Services
             using var scope = _serviceScopeFactory.CreateScope();
             _userServices = scope.ServiceProvider.GetRequiredService<UserServices>();
 
-            var user =  await _userServices.ConvertToEntity(update);
-            if(!(await _userServices.Exists(user.UserId)))
+            if (UpdateType.CallbackQuery == update.Type)
+                await UpdateLanguageCodeFromCallBackAsync(botClient, update, cancellationToken);
+            else
             {
-                _userServices.AddUserAsunc(user);
-            }
+                var user =  await _userServices.ConvertToEntity(update);
+                if(!(await _userServices.Exists(user.UserId)))
+                {
+                    _userServices.AddUserAsunc(user);
+                }
    
-            var culture = await GetUserCulture(update);
+                var culture = await GetUserCulture(update);
 
-            CultureInfo.CurrentCulture = culture;
-            CultureInfo.CurrentUICulture = culture;
+                CultureInfo.CurrentCulture = culture;
+                CultureInfo.CurrentUICulture = culture;
 
-            _stringLocalizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<Localizer>>();
+                _stringLocalizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<Localizer>>();
 
-            var handler = update.Type switch
-            {
-                UpdateType.Message => HandleMessageAsync(botClient, update.Message, cancellationToken),
-                UpdateType.EditedMessage => EditMessageAsync(botClient, update.EditedMessage, cancellationToken),
-                UpdateType.CallbackQuery => HandleCallbackQuery(botClient, update, cancellationToken),
-                _ => HandleUnknownUpdate(botClient, update, cancellationToken)
-            };
+                var handler = update.Type switch
+                {
+                    UpdateType.Message => HandleMessageAsync(botClient, update.Message, cancellationToken),
+                    UpdateType.EditedMessage => EditMessageAsync(botClient, update.EditedMessage, cancellationToken),
+                    UpdateType.CallbackQuery => HandleCallbackQuery(botClient, update, cancellationToken),
+                    _ => HandleUnknownUpdate(botClient, update, cancellationToken)
+                };
+            }
+
+        }
+
+        private async Task UpdateLanguageCodeFromCallBackAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        {
+            await _userServices.UpdateLanguageCode(update, update.CallbackQuery.Data);
+            return;
         }
 
         private async Task HandleCallbackQuery(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bot.Migrations
 {
     [DbContext(typeof(BotDbContext))]
-    [Migration("20230202214038_Iskc")]
-    partial class Iskc
+    [Migration("20230203062247_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

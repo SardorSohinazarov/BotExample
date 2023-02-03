@@ -43,18 +43,20 @@ namespace Bot.Services
             {
                 var user =  await _userServices.ConvertToEntity(update);
 
+                //bor yoki yo'q? qo'shadi: ignore
                 if(!(await _userServices.Exists(user.UserId)))
                 {
                     await _userServices.AddUserAsunc(user);
                 }
-                var culture = await GetUserCulture(update);
-   
 
+                #region Tilni o'rnatadi
+                var culture = await GetUserCulture(update);
                 CultureInfo.CurrentCulture = culture;
                 CultureInfo.CurrentUICulture = culture;
-
                 _stringLocalizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<Localizer>>();
+                #endregion
 
+                #region Messagelarni hadle qilish
                 var handler = update.Type switch
                 {
                     UpdateType.Message => HandleMessageAsync(botClient, update.Message, cancellationToken),
@@ -62,20 +64,16 @@ namespace Bot.Services
                     UpdateType.CallbackQuery => HandleCallbackQuery(botClient, update, cancellationToken),
                     _ => HandleUnknownUpdate(botClient, update, cancellationToken)
                 };
+                await handler;
+                #endregion
             }
-
         }
 
         private async Task UpdateLanguageCodeFromCallBackAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-        {
-            await _userServices.UpdateLanguageCode(update, update.CallbackQuery.Data);
-            return;
-        }
-
+            => await _userServices.UpdateLanguageCode(update, update.CallbackQuery.Data);
+       
         private async Task HandleCallbackQuery(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-        {
-            await _userServices.UpdateLanguageCode(update, update.CallbackQuery.Data);
-        }
+            =>await _userServices.UpdateLanguageCode(update, update.CallbackQuery.Data);
 
         private Task HandleUnknownUpdate(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {

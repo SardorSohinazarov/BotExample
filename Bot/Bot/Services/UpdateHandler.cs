@@ -42,12 +42,13 @@ namespace Bot.Services
             else
             {
                 var user =  await _userServices.ConvertToEntity(update);
+
                 if(!(await _userServices.Exists(user.UserId)))
                 {
-                    _userServices.AddUserAsunc(user);
+                    await _userServices.AddUserAsunc(user);
                 }
-   
                 var culture = await GetUserCulture(update);
+   
 
                 CultureInfo.CurrentCulture = culture;
                 CultureInfo.CurrentUICulture = culture;

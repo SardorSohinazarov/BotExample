@@ -32,6 +32,7 @@ namespace Bot.Services
                 MessageType.Voice => HandleVoiceAsync(botClient, message, cancellationToken), 
                 MessageType.VideoNote => HandleVideoNote(botClient, message, cancellationToken),
                 MessageType.WebAppData => HandleWebAppDataAsync(botClient, message, cancellationToken),
+                MessageType.Video => HandleVideoAsync(botClient, message, cancellationToken),
                 _ => HandleUnknownMessageAsync(botClient, message, cancellationToken)
             };
 
